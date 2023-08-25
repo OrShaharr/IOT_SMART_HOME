@@ -15,10 +15,12 @@ from mqtt_init import *
 global clientname
 r=random.randrange(1,10000000)
 clientname="IOT_client-Id-"+str(r)
-#relay_topic = 'pr/home/'+str(r)+'/sts'
-relay_topic = 'pr/home/5216/sts'
+relay_topicB = 'IoT/SmartHeat/DHT/sts'
+relay_topicA = 'IoT/SmartHeat/Button/sts'
 global ON
 ON = False
+global ON_B
+ON_B = False
 
 class Mqtt_client():
     
@@ -89,7 +91,7 @@ class Mqtt_client():
         topic=msg.topic
         m_decode=str(msg.payload.decode("utf-8","ignore"))
         print("message from:"+topic, m_decode)
-        mainwin.connectionDock.update_btn_state(m_decode)
+        mainwin.connectionDock.update_btn_state(topic)
 
     def connect_to(self):
         # Init paho mqtt client class        
@@ -158,12 +160,20 @@ class ConnectionDock(QDockWidget):
         self.eConnectbtn.clicked.connect(self.on_button_connect_click)
         self.eConnectbtn.setStyleSheet("background-color: gray")
         
-        self.eSubscribeTopic=QLineEdit()
-        self.eSubscribeTopic.setText(relay_topic)
+        self.eSubscribeTopicA=QLineEdit()
+        self.eSubscribeTopicA.setText(relay_topicA)
 
-        self.ePushtbtn=QPushButton("", self)
-        self.ePushtbtn.setToolTip("Push me")
+        self.eSubscribeTopicB=QLineEdit()
+        self.eSubscribeTopicB.setText(relay_topicB)
+
+        self.ePushtbtn=QPushButton("Button", self)
+        self.ePushtbtn.setToolTip("")
         self.ePushtbtn.setStyleSheet("background-color: gray")
+
+        
+        self.ePushtbtnB=QPushButton("DHT", self)
+        self.ePushtbtnB.setToolTip("")
+        self.ePushtbtnB.setStyleSheet("background-color: gray")
 
         formLayot=QFormLayout()
         # formLayot.addRow("Host",self.eHostInput )
@@ -175,8 +185,10 @@ class ConnectionDock(QDockWidget):
         # formLayot.addRow("SSL",self.eSSL )
         # formLayot.addRow("Clean Session",self.eCleanSession )
         formLayot.addRow("Turn On/Off",self.eConnectbtn)
-        formLayot.addRow("Sub topic",self.eSubscribeTopic)
+        formLayot.addRow("Sub topic",self.eSubscribeTopicA)
+        formLayot.addRow("Sub topic",self.eSubscribeTopicB)
         formLayot.addRow("Status",self.ePushtbtn)
+        formLayot.addRow("Status",self.ePushtbtnB)
 
         widget = QWidget(self)
         widget.setLayout(formLayot)
@@ -195,16 +207,26 @@ class ConnectionDock(QDockWidget):
         self.mc.set_password(self.ePassword.text())        
         self.mc.connect_to()        
         self.mc.start_listening()
-        self.mc.subscribe_to(self.eSubscribeTopic.text())
+        self.mc.subscribe_to(self.eSubscribeTopicA.text())
+        self.mc.subscribe_to(self.eSubscribeTopicB.text())
     
     def update_btn_state(self,text):
         global ON
-        if ON:
-            self.ePushtbtn.setStyleSheet("background-color: gray")
-            ON = False
-        else:
-            self.ePushtbtn.setStyleSheet("background-color: red")
-            ON = True
+        global ON_B
+        if text=='IoT/SmartHeat/Button/sts':
+            if ON:
+                self.ePushtbtn.setStyleSheet("background-color: gray")
+                ON = False
+            else:
+                self.ePushtbtn.setStyleSheet("background-color: red")
+                ON = True
+        if text=='IoT/SmartHeat/DHT/sts':
+            if ON_B:
+                self.ePushtbtnB.setStyleSheet("background-color: gray")
+                ON_B = False
+            else:
+                self.ePushtbtnB.setStyleSheet("background-color: red")
+                ON_B = True          
       
 class MainWindow(QMainWindow):
     

@@ -237,15 +237,16 @@ class MainWindow(QMainWindow):
         self.addDockWidget(Qt.TopDockWidgetArea, self.connectionDock)        
 
     def update_data(self):
-        print('Next update')
-        temp=22+random.randrange(1,10)/10
-        hum=74+random.randrange(1,25)/10
-        current_data='Temperature: '+str(temp)+' Humidity: '+str(hum)
-        self.connectionDock.Temperature.setText(str(temp))
-        self.connectionDock.Humidity.setText(str(hum))
-        self.mc.publish_to(DHT_topic,current_data)
-        date = datetime.datetime.now().strftime(dateFromat)
-        insert_DHT_to_db(database,tablename=DHT_table,value1=date,value2=temp,value3=hum)
+        if CONNECTED:
+            print('Next update')
+            temp=22+random.randrange(1,10)/10
+            hum=74+random.randrange(1,25)/10
+            current_data='Temperature: '+str(temp)+' Humidity: '+str(hum)
+            self.connectionDock.Temperature.setText(str(temp))
+            self.connectionDock.Humidity.setText(str(hum))
+            self.mc.publish_to(DHT_topic,current_data)
+            date = datetime.datetime.now().strftime(dateFromat)
+            insert_DHT_to_db(database,tablename=DHT_table,value1=date,value2=temp,value3=hum)
         
         
 
