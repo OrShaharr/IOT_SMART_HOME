@@ -257,6 +257,7 @@ class SubscribeDock(QDockWidget):
     # create function that update text in received message window
     def update_mess_win(self,text):
         self.eRecMess.append(text)
+
         
 class MainWindow(QMainWindow):
     
@@ -271,7 +272,7 @@ class MainWindow(QMainWindow):
 
         # set up main window
         self.setGeometry(30, 100, 800, 600)
-        self.setWindowTitle('Monitor GUI')        
+        self.setWindowTitle('Smart Heat GUI')        
 
         # Init QDockWidget objects        
         self.connectionDock = ConnectionDock(self.mc)        
